@@ -106,8 +106,10 @@ module.exports = {
       message.lineReplyNoMention(shopEmbed);
     } else if (section.toLowerCase() === 'boosts') {
       let description = `You currently have: ${user.exoticMatter.yellow} <a:yellowexoticmatter:844649686673653771>, and ${user.exoticMatter.green} <a:greenexoticmatter:844649631098339350>.\n`;
-      description += `6 <a:yellowexoticmatter:844649686673653771> - Increase resource collection for 5 minutes. **${prefix}buy Collect5m**\n`;
-      description += `6 <a:greenexoticmatter:844649631098339350> - Increase resource collection for 20 minutes. **${prefix}buy Collect20m**\n`;
+      description += `12 <a:yellowexoticmatter:844649686673653771> - Increase resource collection for 5 minutes. **${prefix}buy Collect5m**\n`;
+      description += `12 <a:yellowexoticmatter:844649686673653771> - Increase space junk collection for 5 minutes. **${prefix}buy Junk5m**\n`;
+      description += `12 <a:greenexoticmatter:844649631098339350> - Increase resource collection for 20 minutes. **${prefix}buy Collect20m**\n`;
+      description += `12 <a:greenexoticmatter:844649631098339350> - Increase space junk collection for 20 minutes. **${prefix}buy Junk20m**\n`;
       const shopEmbed = new Discord.MessageEmbed()
         .setTitle(`Temporary Boosts`)
         .setDescription(description)

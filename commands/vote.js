@@ -16,7 +16,7 @@ module.exports = {
       inviteEmbed.setColor("RANDOM");
     }
     inviteEmbed.setTitle("Vote for Idle Astronaut!");
-    inviteEmbed.setDescription(`Vote Link: https://discord.ly/idle-astronaut\nInvite Link: https://dsc.gg/idleastronaut \nSupport Server Link: https://discord.gg/Ay4ZjDxv4H`);
+    inviteEmbed.setDescription(`**VOTE TO RECIEVE 2 PERSONAL BOOSTERS AND 1 GLOBAL BOOSTER**\nTop.gg: https://top.gg/bot/841450235960229919/vote\nDiscord Bot List: https://discord.ly/idle-astronaut/upvote\n\nInvite Link: https://dsc.gg/idleastronaut \nSupport Server Link: https://discord.gg/Ay4ZjDxv4H`);
     inviteEmbed.setFooter('Thanks for using my bot :) - rev');
     message.lineReplyNoMention(inviteEmbed);
   }

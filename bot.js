@@ -54,8 +54,9 @@ client.on('ready', () => {
     const poster = new dbots.Poster({
       client,
       apiKeys: {
-        discordbotlist: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoxLCJpZCI6Ijg0MTQ1MDIzNTk2MDIyOTkxOSIsImlhdCI6MTYyMTE3NzMxN30.Ams71mBdNPJOoiPXsRFOk2lfoh7jb6zC2o87vLI0XQE',
-        spacebotslist: 'TYTanUXSsxYD--J78X.NwkG28kCEqY1e1raEXBG1qavYS5vPh-'
+        discordbotlist: process.env.DBL,
+        spacebotslist: process.env.SPACE,
+        topgg: process.env.TOPGG
       },
       clientLibrary: 'discord.js'
     });
@@ -94,15 +95,7 @@ client.on('ready', () => {
         }
       }
     });
-    const hook = new DBotHook({
-      authSecrets: {
-        discordbotlist: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoxLCJpZCI6Ijg0MTQ1MDIzNTk2MDIyOTkxOSIsImlhdCI6MTYyMTE3NzMxN30.Ams71mBdNPJOoiPXsRFOk2lfoh7jb6zC2o87vLI0XQE'
-      }
-    });
-    hook.listen(port);
-    hook.on('called', event => {
-      console.log(event);
-    });
+    
     
 })
 

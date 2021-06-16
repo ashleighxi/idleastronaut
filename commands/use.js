@@ -78,6 +78,10 @@ module.exports = {
           await boosters.splice(boosterIndex, 1);
           useEmbed.setDescription(`✅ Global Booster added to queue!`);
           message.lineReplyNoMention(useEmbed);
+          let boostChannel = client.channels.cache.get('854724889269633035');
+          boostChannel.send(`Global boost activated by **${message.author.tag}**!`).then( message => {
+            message.react('854726625009860608')
+          }).catch(err => console.log(err));
           await globals.save();
           await user.save();
         } else {

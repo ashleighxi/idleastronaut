@@ -172,10 +172,10 @@ module.exports = {
         let spacejunkMultiplier = user.multipliers.spacejunk + (user.upgrades.spacejunk.currentLevel * 0.05) + junk;
         let rarity;
         let rarityMultiplier;
-        if (roll * spacejunkMultiplier >= 0.9 - (user.upgrades.spacejunkQuality.currentLevel * 0.01)) {
+        if (roll * spacejunkMultiplier >= 1.25 - (user.upgrades.spacejunkQuality.currentLevel * 0.01)) {
           rarity = 'very rare';
           rarityMultiplier = 3;
-        } else if (roll * spacejunkMultiplier >= 0.85 - (user.upgrades.spacejunkQuality.currentLevel * 0.01)) {
+        } else if (roll * spacejunkMultiplier >= 1.1 - (user.upgrades.spacejunkQuality.currentLevel * 0.01)) {
           rarity = 'rare';
           rarityMultiplier = 2;
         } else {
