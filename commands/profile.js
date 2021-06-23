@@ -27,16 +27,17 @@ module.exports = {
     let description = '';
     description += `Balance: **$${profile.balance.toLocaleString()}**\n`;
     if (profile.prestige > 0) {
-      description += `Level: **P${profile.prestige} ${profile.level.toLocaleString()}**\n`;
+      description += `**Prestige ${profile.prestige} Level ${profile.level.toLocaleString()}**\n`;
     } else {
-      description += `Level: **${profile.level.toLocaleString()}**\n`;
+      description += `**Level ${profile.level.toLocaleString()}**\n`;
     }
     description += `Experience: ${profile.experience.toLocaleString()}/${needed.toLocaleString()} XP\n`;
     description += `Currently using ${profile.suit.icon} **${profile.suit.name}**\n`;
     description += `Current Planet: ${profile.planet.icon} **${profile.planet.name}**\n\n`;
     description += `**Inventory**\n`;
     let value = 0;
-
+    let premium = profile.premium;
+    
     profile.inventory.forEach( resource => {
       description += `**${resource.count}** ${resource.icon} ${resource.name}\n`;
       if (profile.upgrades.sellPrice.currentLevel > 0) {
@@ -59,6 +60,9 @@ module.exports = {
       .setDescription(description)
     if (profile.color) {
       profileEmbed.setColor(profile.color.hex);
+    }
+    if (premium) {
+      profileEmbed.setFooter('Premium Activated');
     }
     await message.lineReplyNoMention(profileEmbed);
   }

@@ -7,6 +7,7 @@ const suitDB = require('../models/suit');
 const shipDB = require('../models/ship');
 const spacejunkDB = require('../models/spacejunk');
 const globalDB = require('../models/global');
+const blacklist = require('../models/blacklist')
 const humanizeDuration = require('humanize-duration');
 const e = require('express');
 
@@ -22,8 +23,8 @@ module.exports = {
       .setTitle('You collected:')
     let collected = '';
     const user = await userDB.findOne({ id: message.author.id });
-    
-    if (user) {
+    const blacklisted = await blacklist.findOne({ id: message.author.id });
+    if (user && !blacklisted) {
       if (user.color) {
         voyageEmbed.setColor(user.color.hex);
       } else {
@@ -214,6 +215,20 @@ module.exports = {
         }
         
         collected += `+${xpGained.toLocaleString()} XP\n`;
+        if (user.autoSell) {
+          let sellPrice = 0;
+          user.inventory.forEach( resource => {
+              let multiplier = user.multipliers.sellPrice + (user.upgrades.sellPrice.currentLevel * 0.05) + (user.prestigeUpgrades.mogul * 0.4);
+              sellPrice += Math.floor(resource.count * resource.value * multiplier);  
+          });
+          while(user.inventory.length > 0) {
+            user.inventory.pop();
+          }
+          user.balance += sellPrice;
+          collected += `You sold them for **$${sellPrice.toLocaleString()}**.\nYou now have **$${user.balance.toLocaleString()}**!\n`;
+        }
+
+
         if (globalBoost) {
           collected += `Global boost by **${globalBoost.booster}**\n`
         }
@@ -242,6 +257,13 @@ module.exports = {
         await user.save();
         await message.lineReplyNoMention(voyageEmbed);
       }
+    } else if (blacklisted) {
+      const blacklistEmbed = new Discord.MessageEmbed()
+        .setTitle(`You are blacklisted!`)
+        .setDescription(`Time remaining on blacklist: **${humanizeDuration(blacklisted.endDate - Date.now(), { round: true })}**\nReason: ${blacklisted.reason}`)
+        .setFooter(`Shouldn't have broken the rules smh...`);
+
+      await message.lineReplyNoMention(blacklistEmbed);
     } else {
       const welcomeEmbed = new Discord.MessageEmbed()
         .setTitle('Welcome to Idle Astronaut!')

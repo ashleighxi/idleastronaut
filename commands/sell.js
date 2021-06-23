@@ -25,19 +25,8 @@ module.exports = {
     } else {
       let sellPrice = 0;
       user.inventory.forEach( resource => {
-        if (user.upgrades.sellPrice.currentLevel > 0) {
-          let multiplier = user.multipliers.sellPrice + (user.upgrades.sellPrice.currentLevel * 0.05);
-          if (user.prestigeUpgrades.mogul > 1) {
-            multiplier += 0.4;
-            sellPrice += Math.floor(resource.count * resource.value * multiplier);
-          } else {
-            sellPrice += Math.floor(resource.count * resource.value * multiplier);
-          }
-          
-        } else {
-          sellPrice += Math.floor(resource.count * resource.value);
-        }
-        
+          let multiplier = user.multipliers.sellPrice + (user.upgrades.sellPrice.currentLevel * 0.05) + (user.prestigeUpgrades.mogul * 0.4);
+          sellPrice += Math.floor(resource.count * resource.value * multiplier);  
       });
       while(user.inventory.length > 0) {
         user.inventory.pop();

@@ -8,6 +8,7 @@ require('dotenv').config();
 require('discord-reply');
 const cron = require('node-cron');
 const globalDB = require('./models/global');
+const blacklistDB = require('./models/blacklist');
 const client = new DiscordJS.Client( {
   partials: ['MESSAGE', 'REACTION'],
 });
@@ -37,6 +38,7 @@ client.on('ready', () => {
     dbOptions,
     disableDefaultCommands
   })
+    .setBotOwner(['206982524021243914', '657779629246906369'])
     .setDisplayName('Idle Astronaut')
     .setMongoPath(process.env.MONGO_URI)
     .setDefaultPrefix('a')
@@ -94,8 +96,17 @@ client.on('ready', () => {
           }
         }
       }
+      let blacklist = await blacklistDB.find({});
+      if (blacklist.length > 0) {
+        blacklist.forEach(async member => {
+          if (member.endDate < Date.now()) {
+            await blacklistDB.findOneAndDelete({ id: member.id });
+            console.log('member unblacklisted');
+          }
+        })
+      }
     });
-    
+    client.user.setPresence({ activity: {name: 'avoyage', type: 'PLAYING'}, status: 'idle'});
     
 })
 

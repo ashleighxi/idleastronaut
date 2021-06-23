@@ -4,6 +4,7 @@ const userDB = require('../models/user');
 const suitDB = require('../models/suit');
 const shipDB = require('../models/ship');
 const resourceDB = require('../models/resource');
+let newWorker;
 module.exports = {
   aliases: [],
   name: 'buy',
@@ -430,7 +431,7 @@ module.exports = {
           successEmbed.setColor(user.color.hex);
         }  
         await message.lineReplyNoMention(successEmbed);
-        let newWorker = setInterval(worker(), 60*1000);
+        newWorker = setInterval(worker(user), 3000);
       } else {
         const errorEmbed = new Discord.MessageEmbed()
             .setDescription('❌ You can\'t afford this boost.')
@@ -444,14 +445,30 @@ module.exports = {
 
 }
 
-const worker = (user) => {
+const worker = async (user) => {
+  let userSuit = user.suit;
   const userPlanet = user.planet.id;
   const resources = await resourceDB.find({ planet: userPlanet });
   const suit = await suitDB.findOne({ id: userSuit.id });
   let result = [];
   let potentialResources = [];
   let options = [];
-  let amounts = []
+  let amounts = [];
+  let userShips = [];
+  let userLevel = user.level;
+  let userXP = user.xp;
+  let xpGained = 0;
+  const ships = user.ships;
+  for (let i = 0; i < ships.length; i++) {
+    const shipCheck = await shipDB.findOne({ id: ships[i].id });
+    if (shipCheck) {
+      userShips.push(shipCheck);
+    }
+  }
+  let totalShipBoost = 0;
+  for (let i = 0; i < userShips.length; i++) {
+    totalShipBoost += userShips[i].boost;
+  }
   resources.forEach( resource => {
     for (let i = 0; i < resource.rarity; i++) {
       if (user.level >= resource.level) {
@@ -476,7 +493,7 @@ const worker = (user) => {
 
   for (let i = 0; i < options.length; i++) {
     if (amounts[i] > 0) {
-      let resourceCheck = user.inventory.find( ({id}) => id === options[i].id);
+      let resourceCheck = await user.inventory.find( ({id}) => id === options[i].id);
       if (resourceCheck) {
         resourceCheck.count += amounts[i];
       } else {
@@ -488,8 +505,31 @@ const worker = (user) => {
           icon: options[i].icon
         });
       }
-      collected += `${amounts[i]} ${options[i].icon} ${options[i].name}\n`;
     }
   }
-
+  if (user.upgrades.xp.currentLevel > 0 || user.prestigeUpgrades.brainUpgrade > 0) {
+    xpGained = Math.floor(xpGained * (1 + (user.upgrades.xp.currentLevel * 0.1) + (user.prestigeUpgrades.brainUpgrade * 0.35)));
+  }
+  user.experience += xpGained;
+  const needed = await getNeededXP(userLevel);
+  if (user.experience >= needed) {
+    user.level++;
+    user.experience -= needed;
+    user.balance += needed * 4;
+  }
+  await user.save();
+  let now = Date.now();
+  let currentBoost = user.boosts.find( ({id}) => id === 'auto10m' || id === 'auto30m');
+  if (currentBoost) {
+    let end = currentBoost.endTime;
+    if (now > end) {
+      clearInterval(newWorker);
+      user.workerFinished = true;
+      let boostIndex = user.boosts.indexOf(currentBoost);
+      await user.boosts.splice(boostIndex, 1);
+      await user.save();
+    }
+  }
 }
+
+const getNeededXP = async level => level * level * 50;

@@ -48,6 +48,7 @@ var prestigeUpgradesSchema = new mongoose.Schema({
   mogul: { type: Number, default: 0},
   targetingSystem: { type: Number, default: 0},
   brainUpgrade: { type: Number, default: 0},
+  idleAstronaut: {type: Number, defualt: 0}
 })
 
 const userSchema = mongoose.Schema({
@@ -101,7 +102,9 @@ const userSchema = mongoose.Schema({
     id: String,
     name: String,
   })],
-  hasVoted: Boolean
+  hasVoted: Boolean,
+  autoSell: Boolean,
+  premium: Boolean
 });
 
 module.exports = mongoose.model('User', userSchema);

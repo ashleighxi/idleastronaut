@@ -65,10 +65,24 @@ module.exports = {
       message.lineReplyNoMention(prestigeEmbed);
     } else if (section.toLowerCase() === 'shop') {
       let description = `**${user.exoticMatter.purple}** Purple Exotic Matter <a:purpleexoticmatter:844649568557334558>\n`;
-      description += `**Prodigal Astronaut** - 10% boost to every multiplier. - **${user.prestigeUpgrades.prodigalAstronaut}/1**\n`;
-      description += `**Mogul** - 40% sell boost. - **${user.prestigeUpgrades.mogul}/1**\n`;
-      description += `**Targeting System** - 25% more resources collected. - **${user.prestigeUpgrades.targetingSystem}/1**\n`;
-      description += `**Brain Upgrade** - 35% more experience from all sources. - **${user.prestigeUpgrades.brainUpgrade}/1**\n`;
+      if (user.prestigeUpgrades.idleAstronaut === undefined) {
+        user.prestigeUpgrades.idleAstronaut = 0;
+        await user.save();
+      }
+      
+      if (user.prestige > 4) {
+        description += `**Prodigal Astronaut** - 10% boost to every multiplier. - **${user.prestigeUpgrades.prodigalAstronaut}/2**\n`;
+        description += `**Mogul** - 40% sell boost. - **${user.prestigeUpgrades.mogul}/2**\n`;
+        description += `**Targeting System** - 25% more resources collected. - **${user.prestigeUpgrades.targetingSystem}/2**\n`;
+        description += `**Brain Upgrade** - 35% more experience from all sources. - **${user.prestigeUpgrades.brainUpgrade}/2**\n`;
+        description += `**Idle Astronaut** - 40% more high quality resources, and a 20% sell price and XP buff - **${user.prestigeUpgrades.idleAstronaut}/1**`;
+      } else {
+        description += `**Prodigal Astronaut** - 10% boost to every multiplier. - **${user.prestigeUpgrades.prodigalAstronaut}/1**\n`;
+        description += `**Mogul** - 40% sell boost. - **${user.prestigeUpgrades.mogul}/1**\n`;
+        description += `**Targeting System** - 25% more resources collected. - **${user.prestigeUpgrades.targetingSystem}/1**\n`;
+        description += `**Brain Upgrade** - 35% more experience from all sources. - **${user.prestigeUpgrades.brainUpgrade}/1**\n`;
+      }
+      
       const shopEmbed = new Discord.MessageEmbed()
         .setTitle(`Prestige Shop\nSpend your Purple Exotic Matter <a:purpleexoticmatter:844649568557334558> here! (${prefix}prestige buy)`)
         .setDescription(description)
@@ -90,24 +104,28 @@ module.exports = {
         return message.lineReplyNoMention(buyEmbed);
       }
       let description = '';
-      if (choice === 'prodigal astronaut' && user.prestigeUpgrades.prodigalAstronaut !== 1) {
-        user.prestigeUpgrades.prodigalAstronaut = 1;
+      if ((choice === 'prodigal astronaut' && user.prestigeUpgrades.prodigalAstronaut < 1) || (choice === 'prodigal astronaut' && user.prestige > 4 && user.prestigeUpgrades.prodigalAstronaut < 2)) {
+        user.prestigeUpgrades.prodigalAstronaut += 1;
         user.exoticMatter.purple -= 1;
         description = 'You are now a **Prodigal Astronaut**!';
-      } else if (choice === 'mogul' && user.prestigeUpgrades.mogul !== 1) {
-        user.prestigeUpgrades.mogul = 1;
+      } else if ((choice === 'mogul' && user.prestigeUpgrades.mogul < 1) || (choice === 'mogul' && user.prestige > 4 && user.prestigeUpgrades.mogul < 2)) {
+        user.prestigeUpgrades.mogul += 1;
         user.exoticMatter.purple -= 1;
         description = 'You are now a **Mogul**!';
-      } else if (choice === 'targeting system' && user.prestigeUpgrades.targetingSystem !== 1) {
-        user.prestigeUpgrades.targetingSystem = 1;
+      } else if ((choice === 'targeting system' && user.prestigeUpgrades.targetingSystem < 1) || (choice === 'targeting system' && user.prestige > 4 && user.prestigeUpgrades.targetingSystem < 2)) {
+        user.prestigeUpgrades.targetingSystem += 1;
         user.exoticMatter.purple -= 1;
         description = 'You now own a **Targeting System**!';
-      } else if (choice === 'brain upgrade' && user.prestigeUpgrades.brainUpgrade !== 1) {
-        user.prestigeUpgrades.brainUpgrade = 1;
+      } else if ((choice === 'brain upgrade' && user.prestigeUpgrades.brainUpgrade < 1) || (choice === 'brain upgrade' && user.prestige > 4 && user.prestigeUpgrades.brainUpgrade < 2)) {
+        user.prestigeUpgrades.brainUpgrade += 1;
         user.exoticMatter.purple -= 1;
         description = 'You got a **Brain Upgrade**!';
+      } else if (choice ==='idle astronaut' && user.prestigeUpgrades.idleAstronaut < 1) {
+        user.prestigeUpgrades.idleAstronaut += 1;
+        user.exoticMatter.purple -= 1;
+        description = 'You are a true **Idle Astronaut**!';
       } else {
-        if (choice === 'prodigal astronaut' || choice === 'mogul' || choice === 'targeting system' || choice === 'brain upgrade') {
+        if (choice === 'prodigal astronaut' || choice === 'mogul' || choice === 'targeting system' || choice === 'brain upgrade' || choice === 'idle astronaut') {
           description = 'You already own that upgrade';
         } else {
           description = "That's not a valid option."
